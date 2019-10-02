@@ -1,3 +1,4 @@
+//requires and global variables
 var request = require("request");
 require("dotenv").config();
 var keys = require("./keys.js");
@@ -7,6 +8,7 @@ var fs = require("fs");
 var moment = require("moment");
 var userInput = process.argv[2];
 var userQuery = process.argv.slice(3).join(" ");
+//app logic function
 function userCommand(userInput, userQuery) {
     switch(userInput) {
         case "concert-this":
@@ -26,9 +28,12 @@ function userCommand(userInput, userQuery) {
         break;
     }
 };
+//call app logic
 userCommand(userInput, userQuery);
+//concert-this function
 function concertThis(){
     console.log(`\n - - - - -\n\nsearching for...${userQuery}'s next show...`);
+    //request to API with user input
     request("https://rest.bandsintown.com/artists/" + userQuery + "/events?app_id=codingbootcamp", function(error, response, body){
         if(!error && response.statusCode === 200){
             var userBand = JSON.parse(body);
@@ -44,11 +49,14 @@ function concertThis(){
         };
     });
 };
+//spotify-this-song function
 function spotifyThisSong(){
     console.log(`\n - - - - -\n\nsearching for..."${userQuery}"`);
+    //shows default option if user input not found
     if(!userQuery){
         userQuery = "the sign ace of base"
     };
+    //spotify search
     spotify.search({
         type: "track",
         query: userQuery,
@@ -65,11 +73,13 @@ function spotifyThisSong(){
         };
     });
 }
+//movie this function
 function movieThis(){
     console.log(`\n - - - - -\n\nsearching for..."${userQuery}"`);
     if(!userQuery){
         userQuery = "mr nobody";
     };
+    //request using omdb API
     request("http://www.omdbapi.com/?t=" + userQuery + "&apikey=trilogy", function (error, response, body) {
         var userMovie = JSON.parse(body);
         if(!error && response.statusCode === 200){
@@ -79,6 +89,7 @@ function movieThis(){
         };
     })
 };
+//utilize readfile to access random.txt
 function doThis(){
     fs.readFile("random.txt", "utf8", function (error, data){
         if(error){
