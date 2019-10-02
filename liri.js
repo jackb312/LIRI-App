@@ -1,12 +1,10 @@
+var request = require("request");
 require("dotenv").config();
 var keys = require("./keys.js");
-var spotify = new Spotify(keys.spotify);
 var Spotify = require("node-spotify-api");
+var spotify = new Spotify(keys.spotify);
 var fs = require("fs");
 var moment = require("moment");
-var request = require("request");
-var omdb = (keys.omdb);
-var bandsintown = (keys.bandsintown);
 var userInput = process.argv[2];
 var userQuery = process.argv.slice(3).join(" ");
 function userCommand(userInput, userQuery) {
@@ -31,7 +29,7 @@ function userCommand(userInput, userQuery) {
 userCommand(userInput, userQuery);
 function concertThis(){
     console.log(`\n - - - - -\n\nsearching for...${userQuery}'s next show...`);
-    request("https://rest.bandsintown.com/artists/" + userQuery + "/events?app_id=codingbootcamp" + bandsintown, function(error, response, body){
+    request("https://rest.bandsintown.com/artists/" + userQuery + "/events?app_id=codingbootcamp", function(error, response, body){
         if(!error && response.statusCode === 200){
             var userBand = JSON.parse(body);
             if(userBand.length > 0){
@@ -58,8 +56,10 @@ function spotifyThisSong(){
     }, function(error, data){
         if(error){
             console.log("ERROR: " + error);
+            
         }
-        var spotifyArray = data.track.items;
+        console.log(data);
+        var spotifyArray = data.tracks.items;
         for(i = 0; i < spotifyArray.length; i++){
             console.log(`\nResults...\n\nArtist: ${data.tracks.items[i].album.artists[0].name} \nSong: ${data.tracks.items[i].name}\nAlbum: ${data.tracks.items[i].album.name}\nSpotify link: ${data.tracks.items[i].external_urls.spotify}\n\n - - - - -`)
         };
@@ -72,8 +72,6 @@ function movieThis(){
     };
     request("http://www.omdbapi.com/?t=" + userQuery + "&apikey=trilogy", function (error, response, body) {
         var userMovie = JSON.parse(body);
-        var ratingsArray = userMovie.ratings;
-        if(ratingsArray.length > 2){}
         if(!error && response.statusCode === 200){
             console.log(`\nResults...\n\nTitle: ${userMovie.Title}\nCast: ${userMovie.Actors}\nReleased: ${userMovie.Year}\nIMDb Rating: ${userMovie.imdbRating}\nRotten Tomatoes Rating: ${userMovie.Ratings[1].Value}\nCountry: ${userMovie.Country}\nLanguage: ${userMovie.Language}\nPlot: ${userMovie.Plot}\n\n- - - - -`) 
         }else{
